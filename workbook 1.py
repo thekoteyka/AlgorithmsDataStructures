@@ -28,6 +28,9 @@ while (R - L) > eps:
 print('метод половинного деления')
 print(f"x = {B}")
 print(f"нашли за {step} шагов")
+# output:
+# x = 1.11834716796875
+# нашли за 14 шагов
 
 
 print('===========')
@@ -67,3 +70,6 @@ while abs(x_curr - x_prev) > eps:
 print("метод хорд")
 print(f"x = {x_curr}")
 print(f"нашли за {step} шагов")
+# output:
+# x = 1.118315636619269
+# нашли за 5 шагов
