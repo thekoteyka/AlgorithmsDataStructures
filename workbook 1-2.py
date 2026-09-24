@@ -51,7 +51,7 @@ def solve2(arr):
     high = len(arr) - 1
     
     while low < high:
-        mid = low + (high - low) // 2
+        mid = (low + high) // 2
         
         if arr[mid] < arr[mid + 1]:
             low = mid + 1
