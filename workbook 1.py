@@ -1,5 +1,5 @@
 import math
-
+# защищено на первом занятии
 def f(x):
     return 0.1 * x ** 2 - x * math.log(x)
 
