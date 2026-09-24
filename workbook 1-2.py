@@ -69,6 +69,7 @@ print(solve2([4,3,2,1])) # не горный
 def solve3(lst):
     low = 0
     high = len(lst) - 1
+
     while low <= high:
         mid = (low + high) // 2
         if lst[mid] < 0:
@@ -79,6 +80,7 @@ def solve3(lst):
 
     low = 0
     high = len(lst) - 1
+
     while low <= high:
         mid = (low + high) // 2
         if lst[mid] <= 0:
@@ -103,19 +105,31 @@ print(solve3(a)) # 3
 
 
 
-# в задании не указано каким способом решать, преподаватель сказал что поэтому так тоже можно 
+
 'task 4'
 def solve4(nums):
     counts = []
-    for i in range(len(nums)):
-        c = 0
-        for j in range(i+1, len(nums)):
-            ii = nums[i]
-            jj = nums[j]
-            if ii > jj:
-                c += 1
-        counts += [c]
-    return counts
+    sorted_right = []
+    
+    for num in reversed(nums):
+        low = 0
+        high = len(sorted_right) - 1
+        
+        while low <= high:
+            mid = (low + high) // 2
+            if sorted_right[mid] < num:
+                low = mid + 1
+            else:
+                high = mid - 1
+                
+        counts.append(low)
+        sorted_right.insert(low, num)
+        
+    return counts[::-1]
+
+print(solve4([5,2,6,1])) 
+print(solve4([5,4,3,2,1]))
+print(solve4([1,2,3]))
 
 print(solve4([5,2,6,1]))  # [2, 1, 1, 0]
 print(solve4([5,4,3,2,1])) # [4, 3, 2, 1, 0]
