@@ -1,4 +1,5 @@
 import math
+import random
 
 # Номер 1
 # Нечетный вариант
@@ -54,41 +55,45 @@ final_result = gcd_sub_four(m1,m2,m3,m4)
 print(f"НОД: {final_result}")
 
 # Номер 2
-def sieve(limit):
-    """Возвращает список простых чисел до limit включительно."""
-    sieve_list = [True] * (limit + 1)
-    sieve_list[0] = sieve_list[1] = False # 0 и 1 не простые
+def is_prime_ferma(n, k=10):
+    """Проверка числа на простоту методом Ферма"""
+    if n < 2: return False
+    if n in (2, 3): return True
+    if n % 2 == 0: return False
     
-    for p in range(2, int(math.sqrt(limit)) + 1):
-        if sieve_list[p]:
-            # Вычеркиваем все числа, кратные p
-            for i in range(p+1, limit + 1, p):
-                sieve_list[i] = False
-                
-    return [p for p in range(2, limit + 1) if sieve_list[p]]
+    for _ in range(k):
+        a = random.randint(2, n - 2)
+        if pow(a, n - 1, n) != 1:
+            return False
+    return True
+
+def naive_split(n):
+    """Наивный алгоритм разбиения числа на 2 множителя"""
+    for a in range(2, math.isqrt(n) + 1):
+        if n % a == 0:
+            return a, n // a
+    return 1, n
 
 def factorize_brute_force(n):
-    # Генерируем простые числа до n
-    primes = sieve(n)
     factors = {} # {множитель: кратность}
+    queue = [n]  # усеченная очередь
+    k = 0        # голова очереди
     
-    for p in primes:
-        if p * p > n and n > 1: # Если квадрат простого больше остатка числа, значит сам остаток простое число
-            if n not in factors:
-                factors[n] = 0
-            factors[n] += 1
-            break
-            
-        count = 0
-        while n % p == 0:
-            count += 1
-            n //= p
+    while k < len(queue):
+        curr = queue[k]
+        k += 1
         
-        if count > 0:
-            factors[p] = count
+        if curr <= 1:
+            continue
             
-        if n == 1:
-            break
+        # Если число уже простое, записываем его в результат
+        if is_prime_ferma(curr):
+            factors[curr] = factors.get(curr, 0) + 1
+        else:
+            # Иначе разбиваем на 2 множителя и дописываем в конец очереди
+            m1, m2 = naive_split(curr)
+            queue.append(m1)
+            queue.append(m2)
             
     return factors
 
@@ -99,11 +104,6 @@ for prime, count in res.items():
 
 
 # Задание 3
-
-def is_prime_sieve(n):
-    if n < 2: return False
-    primes = sieve(n)
-    return n in primes
 
 def ferma(n):
     """Разбивает число на 2 множителя методом Ферма"""
@@ -123,30 +123,27 @@ def ferma(n):
     return a - b, a + b
 
 def full_ferma(n):
-    """Рекурсивно разбивает число до простых множителей"""
+    """Разбивает число до простых множителей через очередь"""
     factors_count = {}
+    queue = [n] # усеченная очередь
+    k = 0       # голова очереди
     
-    def factorize(num):
-        if num == 1:
-            return
-        # Если число простое, записываем и выходим
-        if is_prime_sieve(num):
-            factors_count[num] = factors_count.get(num, 0) + 1
-            return
-            
-        # Разбиваем на два множителя
-        x, y = ferma(num)
+    while k < len(queue):
+        curr = queue[k]
+        k += 1
         
-        # Если Ферма вернул (1, num), то это простое
-        if x == 1:
-            factors_count[y] = factors_count.get(y, 0) + 1
-            return
+        if curr <= 1:
+            continue
             
-        # Рекурсивно факторизуем обе части
-        factorize(x)
-        factorize(y)
+        # Если число простое, записываем в результат
+        if is_prime_ferma(curr):
+            factors_count[curr] = factors_count.get(curr, 0) + 1
+        else:
+            # Разбиваем на два множителя и добавляем в конец очереди
+            x, y = ferma(curr)
+            queue.append(x)
+            queue.append(y)
 
-    factorize(n)
     return factors_count
 
 number_fermat = int(input("Введите нечетное число для факторизации методом Ферма: "))
@@ -164,7 +161,7 @@ def lucas_lehmer_test(p):
     if p == 2:
         return True # M_2 = 3 - простое
         
-    m = p**2 - 1
+    m = (2 ** p) - 1
     s = 4
     
     # Выполняем цикл p - 2 раза
